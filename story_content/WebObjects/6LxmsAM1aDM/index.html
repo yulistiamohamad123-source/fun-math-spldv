@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Media Pembelajaran Interaktif SPLDV</title>
+    
+    
+    <style>
+        :root {
+            --ink: #211850;
+            --purple: #6d35d5;
+            --pink: #e650a3;
+            --blue: #239be6;
+            --paper: #fffdfd;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: var(--ink);
+        }
+        .heading-font {
+            font-family: Georgia, "Times New Roman", serif;
+        }
+        .math-shell {
+            background:
+                radial-gradient(circle at 10% 4%, rgba(255, 255, 255, .65) 0 2px, transparent 3px),
+                radial-gradient(circle at 88% 10%, rgba(255, 255, 255, .7) 0 2px, transparent 3px),
+                linear-gradient(145deg, #251661 0%, #5331a8 46%, #8370e4 100%);
+            min-height: 100vh;
+        }
+        .math-shell::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: .2;
+            background-image: linear-gradient(rgba(255, 255, 255, .2) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .2) 1px, transparent 1px);
+            background-size: 34px 34px;
+            mask-image: linear-gradient(to bottom, transparent, black 50%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 50%, transparent);
+        }
+        .glass {
+            background: rgba(255, 255, 255, .94);
+            border: 1px solid rgba(255, 255, 255, .8);
+            box-shadow: 0 16px 32px rgba(20, 10, 69, .22);
+        }
+        .nav-card {
+            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+            cursor: pointer;
+            background: rgba(255, 255, 255, .85);
+            border: 2px solid transparent;
+        }
+        .nav-card:hover,
+        .nav-card.active {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 26px rgba(29, 10, 76, .32);
+            filter: brightness(1.06);
+            border-color: #7c4ce2;
+        }
+        .view-section {
+            display: none;
+            animation: rise .35s ease both;
+        }
+        .view-section.active {
+            display: block;
+        }
+        .method-panel {
+            display: none;
+        }
+        .method-panel.active {
+            display: block;
+            animation: rise .25s ease both;
+        }
+        .method-tab.active {
+            background: #5630b8;
+            color: #fff;
+            box-shadow: 0 6px 14px rgba(86, 48, 184, .28);
+        }
+        .method-tab {
+            transition: all .2s ease;
+        }
+        .step {
+            border-left: 4px solid #7c4ce2;
+            background: #f5f1ff;
+        }
+        .coefficient-input {
+            appearance: textfield;
+            -moz-appearance: textfield;
+        }
+        .coefficient-input::-webkit-inner-spin-button,
+        .coefficient-input::-webkit-outer-spin-button {
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        input[type="range"] {
+            accent-color: #743ad5;
+        }
+        .feedback.good {
+            background: #e7f8ef;
+            color: #16633a;
+            border-color: #8ddab0;
+        }
+        .feedback.bad {
+            background: #fff0f5;
+            color: #a5265a;
+            border-color: #f7aac9;
+        }
+        .feedback {
+            display: none;
+            border: 1px solid;
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-top: 14px;
+            font-size: .9rem;
+            font-weight: 600;
+        }
+        .feedback.show {
+            display: block;
+        }
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @media (max-width: 640px) {
+            .nav-copy {
+                display: none;
+            }
+        }
+        .canva-button {
+            transition: all .2s ease;
+            background: #5630b8;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .canva-button:hover {
+            background: #45269b;
+            transform: scale(1.01);
+        }
+        .canva-button-outline {
+            background: transparent;
+            color: #5630b8;
+            border: 2px solid #5630b8;
+        }
+        .canva-button-outline:hover {
+            background: #5630b8;
+            color: #fff;
+        }
+        .canva-tag {
+            background: rgba(109, 53, 213, .12);
+            color: #5630b8;
+        }
+        .canva-card {
+            background: rgba(255, 255, 255, .92);
+            border: 1px solid rgba(255, 255, 255, .7);
+            box-shadow: 0 8px 24px rgba(20, 10, 69, .12);
+        }
+        .canva-panel {
+            background: rgba(109, 53, 213, .07);
+            border: 1px solid rgba(109, 53, 213, .15);
+        }
+        .canva-banner {
+            background: rgba(255, 255, 255, .2);
+            backdrop-filter: blur(4px);
+            color: #fff;
+        }
+        .canva-text {
+            color: var(--ink);
+        }
+        .canva-text-white {
+            color: #fff;
+        }
+        .method-tab {
+            background: rgba(255, 255, 255, .7);
+            color: var(--ink);
+            border: 1px solid rgba(109, 53, 213, .2);
+        }
+        .method-tab:hover {
+            background: rgba(109, 53, 213, .1);
+        }
+        .method-tab.active {
+            background: #5630b8;
+            color: #fff;
+            border-color: #5630b8;
+        }
+    </style>
+
+<style>
+/* Offline compatibility layer: replaces the Tailwind CDN used by the source HTML. */
+*{box-sizing:border-box}
+html{line-height:1.5;-webkit-text-size-adjust:100%}
+body{margin:0}
+button,input{font:inherit}
+button{cursor:pointer}
+.w-full{width:100%}.overflow-x-hidden{overflow-x:hidden}.relative{position:relative}.z-10{z-index:10}
+.mx-auto{margin-left:auto;margin-right:auto}.mt-1{margin-top:.25rem}.mt-2{margin-top:.5rem}.mt-3{margin-top:.75rem}.mt-4{margin-top:1rem}.mt-5{margin-top:1.25rem}.mt-6{margin-top:1.5rem}.mt-7{margin-top:1.75rem}.mb-2{margin-bottom:.5rem}.mb-5{margin-bottom:1.25rem}
+.p-3{padding:.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.pt-8{padding-top:2rem}.pb-7{padding-bottom:1.75rem}.pb-12{padding-bottom:3rem}
+.text-center{text-align:center}.text-left{text-align:left}.text-sm{font-size:.875rem}.text-xs{font-size:.75rem}.text-lg{font-size:1.125rem}.text-xl{font-size:1.25rem}.text-2xl{font-size:1.5rem}.text-3xl{font-size:1.875rem}.text-4xl{font-size:2.25rem}.font-medium{font-weight:500}.font-semibold{font-weight:600}.font-bold{font-weight:700}.font-black{font-weight:900}.uppercase{text-transform:uppercase}.leading-relaxed{line-height:1.625}.leading-7{line-height:1.75}.tracking-\[\.2em\]{letter-spacing:.2em}
+.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.block{display:block}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.items-start{align-items:flex-start}.items-end{align-items:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:.25rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-y-3>*+*{margin-top:.75rem}.space-y-5>*+*{margin-top:1.25rem}
+.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.max-w-5xl{max-width:64rem}.max-w-6xl{max-width:72rem}
+.h-8{height:2rem}.w-8{width:2rem}.h-12{height:3rem}.w-12{width:3rem}.h-14{height:3.5rem}.w-14{width:3.5rem}.w-11{width:2.75rem}
+.rounded-lg{border-radius:.5rem}.rounded-xl{border-radius:.75rem}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}
+.border{border-width:1px}.border-2{border-width:2px}.border-transparent{border-color:transparent}.border-purple-100{border-color:#ede9fe}.border-purple-500{border-color:#8b5cf6}.border-blue-200{border-color:#bfdbfe}.border-rose-200{border-color:#fecdd3}
+.bg-white{background:#fff}.bg-white\/20{background:rgba(255,255,255,.2)}.bg-white\/80{background:rgba(255,255,255,.8)}.bg-white\/85{background:rgba(255,255,255,.85)}.bg-purple-50{background:#faf5ff}.bg-purple-100{background:#ede9fe}.bg-purple-600{background:#9333ea}.bg-blue-50{background:#eff6ff}.bg-blue-100{background:#dbeafe}.bg-blue-200{background:#bfdbfe}.bg-rose-50{background:#fff1f2}.bg-rose-100{background:#ffe4e6}.bg-rose-200{background:#fecdd3}.bg-amber-100{background:#fef3c7}.bg-emerald-100{background:#d1fae5}.bg-violet-100{background:#ede9fe}
+.text-white{color:#fff}.text-white\/60{color:rgba(255,255,255,.6)}.text-white\/70{color:rgba(255,255,255,.7)}.text-white\/80{color:rgba(255,255,255,.8)}.text-blue-700{color:#1d4ed8}.text-blue-800{color:#1e40af}.text-blue-900{color:#1e3a8a}.text-rose-700{color:#be123c}.text-rose-800{color:#9f1239}.text-rose-900{color:#881337}.text-emerald-800{color:#065f46}.text-amber-800{color:#92400e}.text-violet-700{color:#6d28d9}.text-purple-600{color:#9333ea}
+.shadow-sm{box-shadow:0 1px 2px rgba(0,0,0,.05)}.shadow-lg{box-shadow:0 10px 15px rgba(0,0,0,.15)}
+.cursor-pointer{cursor:pointer}.appearance-none{appearance:none}.outline-none{outline:0}.transition{transition:all .2s ease}.backdrop-blur-sm{backdrop-filter:blur(4px)}
+.font-mono{font-family:"Courier New",monospace}
+[class*="text-\[#211850\]"]{color:#211850}
+.hover\:bg-purple-700:hover{background:#7e22ce}.hover\:bg-purple-50\/50:hover{background:rgba(250,245,255,.5)}.hover\:bg-blue-300:hover{background:#93c5fd}.hover\:bg-rose-300:hover{background:#fda4af}.hover\:bg-white\/30:hover{background:rgba(255,255,255,.3)}
+@media(min-width:640px){.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:768px){.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.md\:col-span-2{grid-column:span 2}.md\:p-8{padding:2rem}.md\:text-5xl{font-size:3rem}.md\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(min-width:1024px){.lg\:grid-cols-\[1\.05fr_\.95fr\]{grid-template-columns:1.05fr .95fr}}
+@media(min-width:1280px){.xl\:grid-cols-\[\.9fr_1\.1fr\]{grid-template-columns:.9fr 1.1fr}}
+</style>
+
+</head>
+<body class="math-shell w-full overflow-x-hidden">
+
+    <!-- HEADER -->
+    <header class="relative z-10 w-full px-4 pt-8 text-center">
+        <div class="mx-auto max-w-5xl">
+            <div class="mb-2 flex justify-center gap-8 text-xl text-white/70" aria-hidden="true">
+                <span>✦</span><span>✧</span><span>✦</span>
+            </div>
+            <p class="text-sm font-bold tracking-[.2em] uppercase text-white/80">Media Pembelajaran</p>
+            <h1 class="heading-font mt-1 text-4xl font-black text-white drop-shadow-lg md:text-5xl">SPLDV Interaktif</h1>
+            <div class="mx-auto mt-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-5 py-2 text-white shadow-lg backdrop-blur-sm">
+                <span>✨</span>
+                <span class="font-bold">Sistem Persamaan Linear Dua Variabel</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVIGATION -->
+    <nav aria-label="Navigasi pembelajaran" class="relative z-10 mx-auto mt-7 w-full max-w-5xl px-4">
+        <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <button type="button" data-view="tujuan" class="nav-card active rounded-2xl p-4 text-left" aria-pressed="true">
+                <span class="mb-2 block text-3xl">🎯</span>
+                <span class="block font-bold text-[#211850]">Tujuan</span>
+                <span class="nav-copy mt-1 block text-xs text-[#211850]/70">Apa yang akan dipelajari</span>
+            </button>
+            <button type="button" data-view="kasus" class="nav-card rounded-2xl p-4 text-left" aria-pressed="false">
+                <span class="mb-2 block text-3xl">🥤</span>
+                <span class="block font-bold text-[#211850]">Kasus</span>
+                <span class="nav-copy mt-1 block text-xs text-[#211850]/70">Masalah sehari-hari</span>
+            </button>
+            <button type="button" data-view="eksplorasi" class="nav-card rounded-2xl p-4 text-left" aria-pressed="false">
+                <span class="mb-2 block text-3xl">📈</span>
+                <span class="block font-bold text-[#211850]">Eksplorasi</span>
+                <span class="nav-copy mt-1 block text-xs text-[#211850]/70">Ubah koefisien &amp; grafik</span>
+            </button>
+            <button type="button" data-view="metode" class="nav-card rounded-2xl p-4 text-left" aria-pressed="false">
+                <span class="mb-2 block text-3xl">📖</span>
+                <span class="block font-bold text-[#211850]">Metode</span>
+                <span class="nav-copy mt-1 block text-xs text-[#211850]/70">Langkah penyelesaian</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="relative z-10 mx-auto w-full max-w-6xl px-4 py-7 pb-12">
+
+        <!-- ===== VIEW: TUJUAN ===== -->
+        <section id="view-tujuan" class="view-section active" aria-labelledby="tujuan-heading">
+            <div class="glass rounded-3xl p-6 md:p-8">
+                <div class="flex flex-wrap items-center gap-4">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-100 text-3xl">🎯</div>
+                    <div>
+                        <h2 id="tujuan-heading" class="text-2xl font-bold text-[#211850]">Tujuan Pembelajaran</h2>
+                        <p class="mt-1 text-[#211850]/70">Setelah belajar, kamu akan mampu:</p>
+                    </div>
+                </div>
+                <div class="mt-7 grid gap-3 md:grid-cols-2">
+                    <div class="rounded-2xl bg-white/80 p-4 shadow-sm">
+                        <span class="mr-3 text-lg">①</span>
+                        <span class="font-medium">Menjelaskan pengertian SPLDV dan komponennya</span>
+                    </div>
+                    <div class="rounded-2xl bg-white/80 p-4 shadow-sm">
+                        <span class="mr-3 text-lg">②</span>
+                        <span class="font-medium">Menyusun model matematika dari masalah sehari-hari</span>
+                    </div>
+                    <div class="rounded-2xl bg-white/80 p-4 shadow-sm">
+                        <span class="mr-3 text-lg">③</span>
+                        <span class="font-medium">Menentukan himpunan penyelesaian dengan grafik</span>
+                    </div>
+                    <div class="rounded-2xl bg-white/80 p-4 shadow-sm">
+                        <span class="mr-3 text-lg">④</span>
+                        <span class="font-medium">Menyelesaikan SPLDV dengan eliminasi &amp; substitusi</span>
+                    </div>
+                    <div class="rounded-2xl bg-white/80 p-4 shadow-sm md:col-span-2">
+                        <span class="mr-3 text-lg">⑤</span>
+                        <span class="font-medium">Menganalisis jenis solusi (tunggal, tak hingga, atau tidak ada)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== VIEW: KASUS ===== -->
+        <section id="view-kasus" class="view-section" aria-labelledby="kasus-heading">
+            <div class="grid gap-6 lg:grid-cols-[1.05fr_.95fr]">
+                <!-- Case story -->
+                <article class="glass rounded-3xl p-6">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-2xl">🥤</div>
+                        <div>
+                            <h2 id="kasus-heading" class="text-xl font-bold text-[#211850]">Kasus: Warung Kopi &amp; Roti</h2>
+                            <p class="text-sm text-[#211850]/60">Modelkan harga jajan favoritmu!</p>
+                        </div>
+                    </div>
+                    <p class="mt-5 leading-relaxed text-[#211850]/90">
+                        Di sebuah warung, <strong>Roti</strong> dan <strong>Teh</strong> dijual.
+                        Ani membeli <strong>2 roti dan 1 teh</strong> seharga <strong>Rp11.000</strong>.
+                        Budi membeli <strong>1 roti dan 2 teh</strong> seharga <strong>Rp10.000</strong>.
+                        Berapa harga masing-masing?
+                    </p>
+                    <div class="mt-5 rounded-2xl bg-purple-50/70 p-4 font-mono text-sm leading-7">
+                        <p>Misal: <strong>x</strong> = harga roti, <strong>y</strong> = harga teh</p>
+                        <p class="mt-1">① 2x + y = 11.000</p>
+                        <p>② x + 2y = 10.000</p>
+                    </div>
+                    <p class="mt-4 text-sm text-[#211850]/60">💡 <em>Gunakan metode eliminasi atau substitusi untuk menemukan harga satuan.</em></p>
+                </article>
+
+                <!-- Practice / model form -->
+                <aside class="glass rounded-3xl p-6">
+                    <h2 class="text-xl font-bold text-[#211850]">🧪 Uji Pemahamanmu</h2>
+                    <form id="model-form" class="mt-5 space-y-5">
+                        <fieldset>
+                            <legend class="font-semibold text-[#211850]">Apa yang dimisalkan sebagai variabel?</legend>
+                            <label class="mt-3 flex cursor-pointer items-center gap-2 rounded-xl border border-purple-100 p-3 hover:bg-purple-50/50">
+                                <input type="radio" name="variables" value="wrong1" />
+                                <span>x = harga teh, y = harga roti</span>
+                            </label>
+                            <label class="mt-2 flex cursor-pointer items-center gap-2 rounded-xl border border-purple-100 p-3 hover:bg-purple-50/50">
+                                <input type="radio" name="variables" value="correct" />
+                                <span>x = harga roti, y = harga teh</span>
+                            </label>
+                            <label class="mt-2 flex cursor-pointer items-center gap-2 rounded-xl border border-purple-100 p-3 hover:bg-purple-50/50">
+                                <input type="radio" name="variables" value="wrong2" />
+                                <span>x = jumlah roti, y = jumlah teh</span>
+                            </label>
+                        </fieldset>
+
+                        <div>
+                            <label for="model-1" class="mb-2 block font-semibold text-[#211850]">Model persamaan ①</label>
+                            <input id="model-1" class="w-full rounded-xl border-2 border-purple-100 px-4 py-3 font-mono outline-none focus:border-purple-500" type="text" placeholder="contoh: 2x + y = 11000" autocomplete="off" />
+                            <label for="model-2" class="mb-2 mt-3 block font-semibold text-[#211850]">Model persamaan ②</label>
+                            <input id="model-2" class="w-full rounded-xl border-2 border-purple-100 px-4 py-3 font-mono outline-none focus:border-purple-500" type="text" placeholder="contoh: x + 2y = 10000" autocomplete="off" />
+                        </div>
+
+                        <button class="w-full rounded-xl bg-purple-600 px-4 py-3 font-bold text-white transition hover:bg-purple-700" type="submit">Periksa Jawaban</button>
+                    </form>
+                    <p id="model-feedback" class="feedback" aria-live="polite"></p>
+                </aside>
+            </div>
+        </section>
+
+        <!-- ===== VIEW: EKSPLORASI ===== -->
+        <section id="view-eksplorasi" class="view-section" aria-labelledby="explore-heading">
+            <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+                <div>
+                    <h2 id="explore-heading" class="text-2xl font-bold text-white">📊 Eksplorasi Grafik</h2>
+                    <p class="mt-1 text-white/70">Geser koefisien dan amati perubahan garis serta solusinya.</p>
+                </div>
+                <button id="reset-button" class="rounded-xl bg-white/20 px-4 py-2 font-bold text-white backdrop-blur-sm transition hover:bg-white/30" type="button">
+                    🔄 Reset
+                </button>
+            </div>
+
+            <div class="grid gap-6 xl:grid-cols-[.9fr_1.1fr]">
+                <!-- Coefficient controls -->
+                <article class="glass rounded-3xl p-5">
+                    <h3 class="text-lg font-bold text-[#211850]">Atur Koefisien</h3>
+                    <p class="mt-1 text-sm text-[#211850]/60">Ubah nilai a, b, c dari masing-masing persamaan.</p>
+
+                    <div class="mt-5 space-y-5">
+                        <!-- Persamaan 1 -->
+                        <section class="rounded-2xl bg-blue-50/60 p-4">
+                            <h4 class="font-bold text-blue-800">Persamaan 1</h4>
+                            <p id="eq1-display" class="mt-2 rounded-xl bg-white/80 px-3 py-2 text-center font-mono font-bold text-blue-700" aria-live="polite">2x + y = 10</p>
+                            <div class="mt-3 grid grid-cols-3 gap-2">
+                                <div class="text-center">
+                                    <label class="text-sm font-bold text-[#211850]">a₁</label>
+                                    <div class="mt-1 flex items-center justify-center gap-1">
+                                        <button class="adjust h-8 w-8 rounded-lg bg-blue-200 font-bold hover:bg-blue-300" data-target="a1" data-change="-1" type="button">−</button>
+                                        <input id="a1" class="coefficient-input w-11 rounded-lg border border-blue-200 py-1 text-center font-bold" value="2" inputmode="numeric" />
+                                        <button class="adjust h-8 w-8 rounded-lg bg-blue-200 font-bold hover:bg-blue-300" data-target="a1" data-change="1" type="button">+</button>
+                                    </div>
+                                    <input class="coefficient-range mt-2 w-full" data-target="a1" type="range" min="-10" max="10" value="2" />
+                                </div>
+                                <div class="text-center">
+                                    <label class="text-sm font-bold text-[#211850]">b₁</label>
+                                    <div class="mt-1 flex items-center justify-center gap-1">
+                                        <button class="adjust h-8 w-8 rounded-lg bg-blue-200 font-bold hover:bg-blue-300" data-target="b1" data-change="-1" type="button">−</button>
+                                        <input id="b1" class="coefficient-input w-11 rounded-lg border border-blue-200 py-1 text-center font-bold" value="1" inputmode="numeric" />
+                                        <button class="adjust h-8 w-8 rounded-lg bg-blue-200 font-bold hover:bg-blue-300" data-target="b1" data-change="1" type="button">+</button>
+                                    </div>
+                                    <input class="coefficient-range mt-2 w-full" data-target="b1" type="range" min="-10" max="10" value="1" />
+                                </div>
+                                <div class="text-center">
+                                    <label class="text-sm font-bold text-[#211850]">c₁</label>
+                                    <div class="mt-1 flex items-center justify-center gap-1">
+                                        <button class="adjust h-8 w-8 rounded-lg bg-blue-200 font-bold hover:bg-blue-300" data-target="c1" data-change="-1" type="button">−</button>
+                                        <input id="c1" class="coefficient-input w-11 rounded-lg border border-blue-200 py-1 text-center font-bold" value="10" inputmode="numeric" />
+                                        <button class="adjust h-8 w-8 rounded-lg bg-blue-200 font-bold hover:bg-blue-300" data-target="c1" data-change="1" type="button">+</button>
+                                    </div>
+                                    <input class="coefficient-range mt-2 w-full" data-target="c1" type="range" min="-20" max="20" value="10" />
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Persamaan 2 -->
+                        <section class="rounded-2xl bg-rose-50/60 p-4">
+                            <h4 class="font-bold text-rose-800">Persamaan 2</h4>
+                            <p id="eq2-display" class="mt-2 rounded-xl bg-white/80 px-3 py-2 text-center font-mono font-bold text-rose-700" aria-live="polite">x + 3y = 15</p>
+                            <div class="mt-3 grid grid-cols-3 gap-2">
+                                <div class="text-center">
+                                    <label class="text-sm font-bold text-[#211850]">a₂</label>
+                                    <div class="mt-1 flex items-center justify-center gap-1">
+                                        <button class="adjust h-8 w-8 rounded-lg bg-rose-200 font-bold hover:bg-rose-300" data-target="a2" data-change="-1" type="button">−</button>
+                                        <input id="a2" class="coefficient-input w-11 rounded-lg border border-rose-200 py-1 text-center font-bold" value="1" inputmode="numeric" />
+                                        <button class="adjust h-8 w-8 rounded-lg bg-rose-200 font-bold hover:bg-rose-300" data-target="a2" data-change="1" type="button">+</button>
+                                    </div>
+                                    <input class="coefficient-range mt-2 w-full" data-target="a2" type="range" min="-10" max="10" value="1" />
+                                </div>
+                                <div class="text-center">
+                                    <label class="text-sm font-bold text-[#211850]">b₂</label>
+                                    <div class="mt-1 flex items-center justify-center gap-1">
+                                        <button class="adjust h-8 w-8 rounded-lg bg-rose-200 font-bold hover:bg-rose-300" data-target="b2" data-change="-1" type="button">−</button>
+                                        <input id="b2" class="coefficient-input w-11 rounded-lg border border-rose-200 py-1 text-center font-bold" value="3" inputmode="numeric" />
+                                        <button class="adjust h-8 w-8 rounded-lg bg-rose-200 font-bold hover:bg-rose-300" data-target="b2" data-change="1" type="button">+</button>
+                                    </div>
+                                    <input class="coefficient-range mt-2 w-full" data-target="b2" type="range" min="-10" max="10" value="3" />
+                                </div>
+                                <div class="text-center">
+                                    <label class="text-sm font-bold text-[#211850]">c₂</label>
+                                    <div class="mt-1 flex items-center justify-center gap-1">
+                                        <button class="adjust h-8 w-8 rounded-lg bg-rose-200 font-bold hover:bg-rose-300" data-target="c2" data-change="-1" type="button">−</button>
+                                        <input id="c2" class="coefficient-input w-11 rounded-lg border border-rose-200 py-1 text-center font-bold" value="15" inputmode="numeric" />
+                                        <button class="adjust h-8 w-8 rounded-lg bg-rose-200 font-bold hover:bg-rose-300" data-target="c2" data-change="1" type="button">+</button>
+                                    </div>
+                                    <input class="coefficient-range mt-2 w-full" data-target="c2" type="range" min="-20" max="20" value="15" />
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </article>
+
+                <!-- Graph -->
+                <article class="glass rounded-3xl p-5">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-[#211850]">Grafik Kartesius</h3>
+                            <p class="mt-1 text-sm text-[#211850]/60">Titik potong kedua garis adalah solusi.</p>
+                        </div>
+                        <div class="flex gap-2 text-xs font-bold">
+                            <span class="rounded-full bg-blue-100 px-3 py-1 text-blue-800">Garis 1</span>
+                            <span class="rounded-full bg-rose-100 px-3 py-1 text-rose-800">Garis 2</span>
+                        </div>
+                    </div>
+                    <canvas id="graph" class="mt-4 w-full rounded-2xl bg-[#17133b]" style="aspect-ratio:1.25/1" aria-label="Grafik Kartesius dua garis SPLDV"></canvas>
+                    <div id="graph-status" class="mt-4 rounded-xl px-4 py-3 text-center text-sm font-bold" aria-live="polite"></div>
+                    <div class="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+                        <p id="intercepts-1" class="rounded-xl bg-blue-50 p-3 text-blue-900"></p>
+                        <p id="intercepts-2" class="rounded-xl bg-rose-50 p-3 text-rose-900"></p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ===== VIEW: METODE ===== -->
+        <section id="view-metode" class="view-section" aria-labelledby="method-heading">
+            <div class="glass rounded-3xl p-6 md:p-8">
+                <h2 id="method-heading" class="text-2xl font-bold text-[#211850]">📖 Metode Penyelesaian</h2>
+                <p class="mt-2 text-[#211850]/70">Pilih salah satu metode untuk melihat langkah-langkah detailnya.</p>
+
+                <div class="mt-6 flex flex-wrap gap-2" role="tablist" aria-label="Pilihan metode">
+                    <button data-method="grafik" class="method-tab active rounded-xl px-4 py-2 font-bold" type="button" role="tab" aria-selected="true">📈 Grafik</button>
+                    <button data-method="eliminasi" class="method-tab rounded-xl px-4 py-2 font-bold" type="button" role="tab" aria-selected="false">➖ Eliminasi</button>
+                    <button data-method="substitusi" class="method-tab rounded-xl px-4 py-2 font-bold" type="button" role="tab" aria-selected="false">🔄 Substitusi</button>
+                </div>
+
+                <div id="method-grafik" class="method-panel active mt-6" role="tabpanel">
+                    <h3 class="text-lg font-bold text-[#211850]">Metode Grafik</h3>
+                    <div id="grafik-steps" class="mt-4 space-y-3"></div>
+                </div>
+                <div id="method-eliminasi" class="method-panel mt-6" role="tabpanel">
+                    <h3 class="text-lg font-bold text-[#211850]">Metode Eliminasi</h3>
+                    <div id="eliminasi-steps" class="mt-4 space-y-3"></div>
+                </div>
+                <div id="method-substitusi" class="method-panel mt-6" role="tabpanel">
+                    <h3 class="text-lg font-bold text-[#211850]">Metode Substitusi</h3>
+                    <div id="substitusi-steps" class="mt-4 space-y-3"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="relative z-10 w-full pb-7 text-center">
+        <p class="text-sm text-white/60">📚 Media Pembelajaran Interaktif SPLDV — Eksplorasi, Pahami, Kuasai!</p>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ---- DOM refs ----
+            const ids = ['a1', 'b1', 'c1', 'a2', 'b2', 'c2'];
+            const initial = { a1: 2, b1: 1, c1: 10, a2: 1, b2: 3, c2: 15 };
+
+            const n = (id) => Number(document.getElementById(id).value) || 0;
+            const fmt = (v) => Number.isInteger(v) ? String(v) : String(Math.round(v * 100) / 100);
+
+            const equation = (a, b, c) => {
+                const part = (value, variable, first) => {
+                    if (!value) return '';
+                    const sign = value < 0 ? (first ? '− ' : ' − ') : (first ? '' : ' + ');
+                    const magnitude = Math.abs(value) === 1 ? '' : Math.abs(value);
+                    return sign + magnitude + variable;
+                };
+                const left = part(a, 'x', true) + part(b, 'y', !a);
+                return (left || '0') + ' = ' + c;
+            };
+
+            const values = () => ({
+                a1: n('a1'),
+                b1: n('b1'),
+                c1: n('c1'),
+                a2: n('a2'),
+                b2: n('b2'),
+                c2: n('c2')
+            });
+
+            const solution = (v) => {
+                const det = v.a1 * v.b2 - v.a2 * v.b1;
+                if (det === 0) {
+                    const inf = (v.a1 * v.c2 === v.a2 * v.c1) && (v.b1 * v.c2 === v.b2 * v.c1);
+                    return { type: inf ? 'infinite' : 'none' };
+                }
+                return {
+                    type: 'one',
+                    x: (v.c1 * v.b2 - v.c2 * v.b1) / det,
+                    y: (v.a1 * v.c2 - v.a2 * v.c1) / det
+                };
+            };
+
+            function interceptText(a, b, c, which) {
+                const parts = [];
+                if (a) parts.push('X: (' + fmt(c / a) + ', 0)');
+                if (b) parts.push('Y: (0, ' + fmt(c / b) + ')');
+                return which + ' • ' + (parts.length ? parts.join(' | ') : 'bukan garis');
+            }
+
+            // ---- draw graph ----
+            function drawGraph(v, sol) {
+                const canvas = document.getElementById('graph');
+                const rect = canvas.getBoundingClientRect();
+                const ratio = window.devicePixelRatio || 1;
+                const w = Math.max(300, rect.width * ratio);
+                const h = Math.max(240, rect.height * ratio);
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext('2d');
+
+                const scale = Math.min(w / 24, h / 20);
+                const cx = w / 2,
+                    cy = h / 2;
+
+                ctx.clearRect(0, 0, w, h);
+                ctx.fillStyle = '#17133b';
+                ctx.fillRect(0, 0, w, h);
+
+                // grid
+                ctx.strokeStyle = 'rgba(202,187,255,.16)';
+                ctx.lineWidth = ratio;
+                for (let i = -12; i <= 12; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(cx + i * scale, 0);
+                    ctx.lineTo(cx + i * scale, h);
+                    ctx.stroke();
+                }
+                for (let i = -10; i <= 10; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, cy - i * scale);
+                    ctx.lineTo(w, cy - i * scale);
+                    ctx.stroke();
+                }
+
+                // axes
+                ctx.strokeStyle = 'rgba(255,255,255,.72)';
+                ctx.lineWidth = 2 * ratio;
+                ctx.beginPath();
+                ctx.moveTo(0, cy);
+                ctx.lineTo(w, cy);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(cx, 0);
+                ctx.lineTo(cx, h);
+                ctx.stroke();
+
+                // tick labels
+                ctx.fillStyle = 'rgba(255,255,255,.75)';
+                ctx.font = (11 * ratio) + 'px DM Sans, sans-serif';
+                ctx.textAlign = 'center';
+                for (let i = -10; i <= 10; i += 2) {
+                    if (i) {
+                        ctx.fillText(i, cx + i * scale, cy + 14 * ratio);
+                        ctx.fillText(i, cx - 13 * ratio, cy - i * scale + 4 * ratio);
+                    }
+                }
+                ctx.fillText('x', w - 12 * ratio, cy - 8 * ratio);
+                ctx.fillText('y', cx + 10 * ratio, 12 * ratio);
+
+                // helper: draw line
+                function line(a, b, c, color) {
+                    if (a === 0 && b === 0) return;
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 3 * ratio;
+                    ctx.beginPath();
+                    if (b !== 0) {
+                        const y = (x) => (c - a * x) / b;
+                        ctx.moveTo(cx - 12 * scale, cy - y(-12) * scale);
+                        ctx.lineTo(cx + 12 * scale, cy - y(12) * scale);
+                    } else {
+                        const x = c / a;
+                        ctx.moveTo(cx + x * scale, 0);
+                        ctx.lineTo(cx + x * scale, h);
+                    }
+                    ctx.stroke();
+
+                    const marks = [];
+                    if (a) marks.push([c / a, 0]);
+                    if (b) marks.push([0, c / b]);
+                    marks.forEach(([x, y]) => {
+                        if (Math.abs(x) <= 12 && Math.abs(y) <= 10) {
+                            ctx.fillStyle = color;
+                            ctx.beginPath();
+                            ctx.arc(cx + x * scale, cy - y * scale, 4 * ratio, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    });
+                }
+
+                line(v.a1, v.b1, v.c1, '#35b8ff');
+                line(v.a2, v.b2, v.c2, '#ff5b9d');
+
+                const status = document.getElementById('graph-status');
+                if (sol.type === 'one') {
+                    const px = cx + sol.x * scale,
+                        py = cy - sol.y * scale;
+                    ctx.fillStyle = '#ffe56c';
+                    ctx.beginPath();
+                    ctx.arc(px, py, 7 * ratio, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 2 * ratio;
+                    ctx.stroke();
+                    ctx.font = 'bold ' + (12 * ratio) + 'px DM Sans, sans-serif';
+                    ctx.textAlign = 'left';
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText('(' + fmt(sol.x) + ', ' + fmt(sol.y) + ')', px + 10 * ratio, py - 10 * ratio);
+                    status.textContent = '✓ Solusi tunggal: (' + fmt(sol.x) + ', ' + fmt(sol.y) + ')';
+                    status.className = 'mt-4 rounded-xl bg-emerald-100 px-4 py-3 text-center text-sm font-bold text-emerald-800';
+                } else if (sol.type === 'none') {
+                    status.textContent = '∥ Garis sejajar — tidak ada solusi.';
+                    status.className = 'mt-4 rounded-xl bg-amber-100 px-4 py-3 text-center text-sm font-bold text-amber-800';
+                } else {
+                    status.textContent = '≡ Garis berimpit — terdapat tak terhingga solusi.';
+                    status.className = 'mt-4 rounded-xl bg-violet-100 px-4 py-3 text-center text-sm font-bold text-violet-800';
+                }
+            }
+
+            // ---- render method steps ----
+            function step(text) {
+                return '<div class="step rounded-r-xl px-4 py-3 text-sm leading-relaxed">' + text + '</div>';
+            }
+
+            function renderMethods(v, sol) {
+                if (sol.type !== 'one') {
+                    const msg = sol.type === 'none' ?
+                        'Perbandingan koefisien menghasilkan garis sejajar, sehingga kedua persamaan tidak bertemu.' :
+                        'Kedua persamaan menyatakan garis yang sama. Setiap titik pada garis adalah solusi.';
+                    ['grafik', 'eliminasi', 'substitusi'].forEach(id => {
+                        document.getElementById(id + '-steps').innerHTML = step('<b>Amati kondisi khusus.</b><br>' + msg);
+                    });
+                    return;
+                }
+
+                // Grafik
+                document.getElementById('grafik-steps').innerHTML =
+                    step('<b>1. Tentukan titik potong sumbu.</b><br>Garis 1: ' + interceptText(v.a1, v.b1, v.c1, '').replace(
+                        ' • ', '') + '<br>Garis 2: ' + interceptText(v.a2, v.b2, v.c2, '').replace(' • ', '')) +
+                    step('<b>2. Gambar kedua garis</b> melalui masing-masing dua titik potong sumbu pada grafik.') +
+                    step('<b>3. Baca titik temu.</b><br><span class="font-bold text-violet-700">HP = {(' + fmt(sol.x) +
+                    ', ' + fmt(sol.y) + ')}</span>');
+
+                // Eliminasi
+                const m1 = v.b2,
+                    m2 = v.b1;
+                document.getElementById('eliminasi-steps').innerHTML =
+                    step('<b>1. Samakan koefisien y.</b><br>P1 × ' + m1 + ' dan P2 × ' + m2 + '.') +
+                    step('<b>2. Kurangkan persamaan.</b><br>(' + (v.a1 * m1) + 'x + ' + (v.b1 * m1) + 'y = ' + (v.c1 * m1) +
+                        ') − (' + (v.a2 * m2) + 'x + ' + (v.b2 * m2) + 'y = ' + (v.c2 * m2) + ')') +
+                    step('<b>3. Diperoleh nilai x.</b><br><span class="font-bold text-blue-700">x = ' + fmt(sol.x) +
+                        '</span>. Substitusikan x ke salah satu persamaan untuk memperoleh <span class="font-bold text-rose-700">y = ' +
+                        fmt(sol.y) + '</span>.');
+
+                // Substitusi
+                const useFirst = v.b1 !== 0 ? 1 : 2;
+                const a = useFirst === 1 ? v.a1 : v.a2;
+                const b = useFirst === 1 ? v.b1 : v.b2;
+                const c = useFirst === 1 ? v.c1 : v.c2;
+                document.getElementById('substitusi-steps').innerHTML =
+                    step('<b>1. Nyatakan y dari P' + useFirst + '.</b><br>y = (' + c + ' − ' + a + 'x) / ' + b) +
+                    step('<b>2. Substitusikan bentuk y</b> ke persamaan yang lain, lalu selesaikan nilai x.') +
+                    step('<b>3. Masukkan kembali nilai x.</b><br><span class="font-bold text-blue-700">x = ' + fmt(sol.x) +
+                        '</span> dan <span class="font-bold text-rose-700">y = ' + fmt(sol.y) +
+                        '</span>.<br><span class="font-bold text-violet-700">HP = {(' + fmt(sol.x) + ', ' + fmt(sol.y) +
+                        ')}</span>');
+            }
+
+            // ---- update all ----
+            function updateAll() {
+                const v = values();
+                const sol = solution(v);
+                document.getElementById('eq1-display').textContent = equation(v.a1, v.b1, v.c1);
+                document.getElementById('eq2-display').textContent = equation(v.a2, v.b2, v.c2);
+                document.getElementById('intercepts-1').textContent = interceptText(v.a1, v.b1, v.c1, 'Garis 1');
+                document.getElementById('intercepts-2').textContent = interceptText(v.a2, v.b2, v.c2, 'Garis 2');
+                drawGraph(v, sol);
+                renderMethods(v, sol);
+            }
+
+            // ---- event binding ----
+            // Range sliders
+            document.querySelectorAll('.coefficient-range').forEach(range => {
+                range.addEventListener('input', function() {
+                    const target = this.dataset.target;
+                    document.getElementById(target).value = this.value;
+                    updateAll();
+                });
+            });
+
+            // Number inputs
+            ids.forEach(id => {
+                document.getElementById(id).addEventListener('input', function() {
+                    const range = document.querySelector('.coefficient-range[data-target="' + id + '"]');
+                    if (range) {
+                        const val = Number(this.value);
+                        const min = Number(range.min);
+                        const max = Number(range.max);
+                        if (!isNaN(val) && val >= min && val <= max) {
+                            range.value = val;
+                        } else {
+                            // clamp
+                            const clamped = Math.max(min, Math.min(max, isNaN(val) ? 0 : val));
+                            this.value = clamped;
+                            range.value = clamped;
+                        }
+                    }
+                    updateAll();
+                });
+            });
+
+            // Adjust buttons (+ / -)
+            document.querySelectorAll('.adjust').forEach(button => {
+                button.addEventListener('click', function() {
+                    const target = this.dataset.target;
+                    const input = document.getElementById(target);
+                    const range = document.querySelector('.coefficient-range[data-target="' + target + '"]');
+                    if (!range) return;
+                    const min = Number(range.min);
+                    const max = Number(range.max);
+                    let val = Number(input.value) || 0;
+                    val += Number(this.dataset.change);
+                    val = Math.max(min, Math.min(max, val));
+                    input.value = val;
+                    range.value = val;
+                    updateAll();
+                });
+            });
+
+            // Reset
+            document.getElementById('reset-button').addEventListener('click', function() {
+                ids.forEach(id => {
+                    document.getElementById(id).value = initial[id];
+                    const range = document.querySelector('.coefficient-range[data-target="' + id + '"]');
+                    if (range) range.value = initial[id];
+                });
+                updateAll();
+            });
+
+            // Navigation
+            document.querySelectorAll('[data-view]').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('[data-view]').forEach(x => {
+                        x.classList.remove('active');
+                        x.setAttribute('aria-pressed', 'false');
+                    });
+                    this.classList.add('active');
+                    this.setAttribute('aria-pressed', 'true');
+                    document.querySelectorAll('.view-section').forEach(x => x.classList.remove('active'));
+                    document.getElementById('view-' + this.dataset.view).classList.add('active');
+                });
+            });
+
+            // Method tabs
+            document.querySelectorAll('[data-method]').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('[data-method]').forEach(x => {
+                        x.classList.remove('active');
+                        x.setAttribute('aria-selected', 'false');
+                    });
+                    this.classList.add('active');
+                    this.setAttribute('aria-selected', 'true');
+                    document.querySelectorAll('.method-panel').forEach(x => x.classList.remove('active'));
+                    document.getElementById('method-' + this.dataset.method).classList.add('active');
+                });
+            });
+
+            // Model form
+            document.getElementById('model-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const variable = document.querySelector('input[name="variables"]:checked');
+                const one = document.getElementById('model-1').value.replace(/\s/g, '').toLowerCase();
+                const two = document.getElementById('model-2').value.replace(/\s/g, '').toLowerCase();
+                const okEq = (one === '2x+y=11000' || two === '2x+y=11000') &&
+                    (one === 'x+2y=10000' || two === 'x+2y=10000');
+                const feedback = document.getElementById('model-feedback');
+                if (variable && variable.value === 'correct' && okEq) {
+                    feedback.textContent = 'Hebat! x dapat menyatakan harga roti dan y harga teh. Modelmu sudah tepat.';
+                    feedback.className = 'feedback good show';
+                } else {
+                    feedback.textContent =
+                        'Belum tepat. Pilih arti variabel terlebih dahulu, lalu tulis model tanpa Rp atau tanda titik, misalnya 2x+y=11000.';
+                    feedback.className = 'feedback bad show';
+                }
+            });
+
+            // Resize + init
+            window.addEventListener('resize', updateAll);
+            updateAll();
+
+            // re-draw on orientation / layout shift
+            setTimeout(updateAll, 200);
+
+        })();
+    </script>
+
+</body>
+</html>
